@@ -1,4 +1,7 @@
-import { controllerGetAllUser } from "../controllers/userController.js";
+import {
+  controllerGetAllUser,
+  controllerPostUser,
+} from "../controllers/userController.js";
 import express from "express";
 
 const router = express.Router();
@@ -14,6 +17,11 @@ router.get("/", async (req, res) => {
       message: error.message,
     });
   }
+});
+
+router.post("/", async (req, res) => {
+  const result = await controllerPostUser(req.body, res);
+  return result;
 });
 
 export { router };
