@@ -1,6 +1,7 @@
 import {
   controllerGetAllUser,
   controllerPostUser,
+  controllerPutUser,
 } from "../controllers/userController.js";
 import express from "express";
 
@@ -21,6 +22,11 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const result = await controllerPostUser(req.body, res);
+  return result;
+});
+
+router.put("/:id", async (req, res) => {
+  const result = await controllerPutUser(req.params.id, req.body, res);
   return result;
 });
 

@@ -59,4 +59,61 @@ async function controllerPostUser(data, res) {
   }
 }
 
-export { controllerGetAllUser, controllerPostUser };
+async function controllerPutUser(target, data, res) {
+  const { username, email, password_hash } = data;
+
+  // Check if property missing
+  if (!username || !email || !password_hash) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Invalid, missing value 'username', 'email', or 'password_hash'",
+    });
+  }
+
+  // Check incorrect data type
+  if (
+    typeof username !== "string" ||
+    typeof email !== "string" ||
+    typeof password_hash !== "string"
+  ) {
+    return res
+      .status(400)
+      .json({ status: "fail", message: "Invalid, incorrect data type" });
+  }
+
+  // Check missing id target
+  if (!target) {
+    return res
+      .status(400)
+      .json({ status: "fail", message: "Invalid, missing value 'id' target" });
+  }
+
+  const updated = new Date().toISOString().slice(0, 19).replace("T", " ");
+  const user = await User.create();
+
+  try {
+    const result = await user.putUser(target, {
+      username: username,
+      email: email,
+      password_hash: password_hash,
+      updated_at: updated,
+    });
+
+    // Check id match
+    if (result.affectedRows === 0) {
+      return res
+        .status(400)
+        .json({ status: "fail", message: "Invalid, no user id match" });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Data successfully updated!",
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+}
+
+export { controllerGetAllUser, controllerPostUser, controllerPutUser };

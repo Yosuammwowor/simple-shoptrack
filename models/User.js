@@ -35,6 +35,27 @@ class User {
       this.conn.release();
     }
   }
+
+  async putUser(target, data) {
+    try {
+      const [result] = await this.conn.execute(
+        "UPDATE users SET username = ?, email = ?, password_hash = ?, updated_at = ? WHERE id = ?",
+        [
+          data.username,
+          data.email,
+          data.password_hash,
+          data.updated_at,
+          target,
+        ],
+      );
+
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.conn.release();
+    }
+  }
 }
 
 export { User };
