@@ -13,9 +13,10 @@ class User {
   async getUsers() {
     try {
       const [results] = await this.conn.query("SELECT * FROM users");
+
       return results;
     } catch (error) {
-      throw new Error(error.message);
+      throw error;
     } finally {
       this.conn.release();
     }
@@ -47,6 +48,21 @@ class User {
           data.updated_at,
           target,
         ],
+      );
+
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      this.conn.release();
+    }
+  }
+
+  async deleteUser(target) {
+    try {
+      const [result] = await this.conn.execute(
+        "DELETE FROM users WHERE id = ?",
+        [target],
       );
 
       return result;

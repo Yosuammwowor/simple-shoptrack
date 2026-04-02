@@ -1,14 +1,14 @@
 import { User } from "../models/User.js";
 
-async function controllerGetAllUser() {
+async function controllerGetAllUser(res) {
   const user = await User.create();
 
   try {
-    const res = await user.getUsers();
+    const result = await user.getUsers();
 
-    return res;
+    res.status(200).json({ status: "success", data: result });
   } catch (error) {
-    throw new Error(error.message);
+    res.status(500).json({ status: "error", message: error.message });
   }
 }
 
@@ -116,4 +116,37 @@ async function controllerPutUser(target, data, res) {
   }
 }
 
-export { controllerGetAllUser, controllerPostUser, controllerPutUser };
+async function controllerDeleteUser(target, res) {
+  // Check missing value
+  if (!target) {
+    res
+      .status(400)
+      .json({ status: "fail", message: "Invalid, missing value 'id'" });
+  }
+
+  const user = await User.create();
+
+  try {
+    const result = await user.deleteUser(target);
+
+    // Check id match
+    if (result.affectedRows === 0) {
+      return res
+        .status(400)
+        .json({ status: "fail", message: "Invalid, no user id match" });
+    }
+
+    res
+      .status(200)
+      .json({ status: "success", message: "Data successfully deleted!" });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
+  }
+}
+
+export {
+  controllerGetAllUser,
+  controllerPostUser,
+  controllerPutUser,
+  controllerDeleteUser,
+};
