@@ -63,13 +63,13 @@ async function controllerPostUser(data, res) {
 }
 
 async function controllerPutUser(target, data, res) {
-  const { username, email, password_hash } = data;
+  const { username, email, password } = data;
 
   // Check if property missing
-  if (!username || !email || !password_hash) {
+  if (!username || !email || !password) {
     return res.status(400).json({
       status: "fail",
-      message: "Invalid, missing value 'username', 'email', or 'password_hash'",
+      message: "Invalid, missing value 'username', 'email', or 'password'",
     });
   }
 
@@ -77,7 +77,7 @@ async function controllerPutUser(target, data, res) {
   if (
     typeof username !== "string" ||
     typeof email !== "string" ||
-    typeof password_hash !== "string"
+    typeof password !== "string"
   ) {
     return res
       .status(400)
@@ -92,6 +92,8 @@ async function controllerPutUser(target, data, res) {
   }
 
   const updated = new Date().toISOString().slice(0, 19).replace("T", " ");
+  const password_hash = await bcrypt.hash(password, await bcrypt.genSalt());
+
   const user = await User.create();
 
   try {
@@ -112,7 +114,6 @@ async function controllerPutUser(target, data, res) {
     res.status(200).json({
       status: "success",
       message: "Data successfully updated!",
-      data: result,
     });
   } catch (error) {
     res.status(500).json({ status: "error", message: error.message });
