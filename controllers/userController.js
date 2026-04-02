@@ -1,4 +1,6 @@
 import { User } from "../models/User.js";
+import { nanoid } from "nanoid";
+import bcrypt from "bcrypt";
 
 async function controllerGetAllUser(res) {
   const user = await User.create();
@@ -13,28 +15,29 @@ async function controllerGetAllUser(res) {
 }
 
 async function controllerPostUser(data, res) {
-  const { id, username, email, password_hash } = data;
+  const { username, email, password } = data;
 
   // Check if property missing
-  if (!id || !username || !email || !password_hash) {
+  if (!username || !email || !password) {
     return res.status(400).json({
       status: "fail",
-      message:
-        "Invalid, missing value 'id', 'username', 'email', or 'password_hash'",
+      message: "Invalid, missing value 'username', 'email', or 'password'",
     });
   }
 
   // Check if incorrect data type
   if (
-    typeof id !== "string" ||
     typeof username !== "string" ||
     typeof email !== "string" ||
-    typeof password_hash !== "string"
+    typeof password !== "string"
   ) {
     return res
       .status(400)
       .json({ status: "fail", message: "Invalid, incorrect data type" });
   }
+
+  const id = await nanoid();
+  const password_hash = await bcrypt.hash(password, await bcrypt.genSalt());
 
   const user = await User.create();
 
