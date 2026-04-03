@@ -2,7 +2,7 @@ import { User } from "../models/User.js";
 import { nanoid } from "nanoid";
 import bcrypt from "bcrypt";
 
-async function controllerGetAllUser(res) {
+async function controllerGetAllUser(req, res) {
   const user = await User.create();
 
   try {
@@ -14,8 +14,8 @@ async function controllerGetAllUser(res) {
   }
 }
 
-async function controllerPostUser(data, res) {
-  const { username, email, password } = data;
+async function controllerPostUser(req, res) {
+  const { username, email, password } = req.body;
 
   // Check if property missing
   if (!username || !email || !password) {
@@ -49,7 +49,7 @@ async function controllerPostUser(data, res) {
       password_hash: password_hash,
     });
 
-    res.status(200).json({
+    res.status(201).json({
       status: "success",
       message: "Data successfully added!",
     });
@@ -62,8 +62,9 @@ async function controllerPostUser(data, res) {
   }
 }
 
-async function controllerPutUser(target, data, res) {
-  const { username, email, password } = data;
+async function controllerPutUser(req, res) {
+  const target = req.params.id;
+  const { username, email, password } = req.body;
 
   // Check if property missing
   if (!username || !email || !password) {
@@ -120,10 +121,12 @@ async function controllerPutUser(target, data, res) {
   }
 }
 
-async function controllerDeleteUser(target, res) {
+async function controllerDeleteUser(req, res) {
+  const target = req.params.id;
+
   // Check missing value
   if (!target) {
-    res
+    return res
       .status(400)
       .json({ status: "fail", message: "Invalid, missing value 'id'" });
   }

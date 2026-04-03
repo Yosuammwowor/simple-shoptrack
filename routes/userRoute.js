@@ -8,24 +8,9 @@ import express from "express";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  const result = await controllerGetAllUser(res);
-  return result;
-});
-
-router.post("/", async (req, res) => {
-  const result = await controllerPostUser(req.body, res);
-  return result;
-});
-
-router.put("/:id", async (req, res) => {
-  const result = await controllerPutUser(req.params.id, req.body, res);
-  return result;
-});
-
-router.delete("/:id", async (req, res) => {
-  const result = await controllerDeleteUser(req.params.id, res);
-  return result;
-});
+router.get("/", controllerGetAllUser);
+router.post("/", controllerPostUser);
+router.put("/:id", controllerPutUser);
+router.delete("/:id", controllerDeleteUser);
 
 export { router };
