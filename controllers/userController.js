@@ -3,9 +3,8 @@ import { nanoid } from "nanoid";
 import bcrypt from "bcrypt";
 
 async function controllerGetAllUser(req, res) {
-  const user = await User.create();
-
   try {
+    const user = await User.create();
     const result = await user.getUsers();
 
     res.status(200).json({ status: "success", data: result });
@@ -17,7 +16,7 @@ async function controllerGetAllUser(req, res) {
 async function controllerPostUser(req, res) {
   const { username, email, password } = req.body;
 
-  // Check if property missing
+  // Check property missing
   if (!username || !email || !password) {
     return res.status(400).json({
       status: "fail",
@@ -25,7 +24,7 @@ async function controllerPostUser(req, res) {
     });
   }
 
-  // Check if incorrect data type
+  // Check incorrect data type
   if (
     typeof username !== "string" ||
     typeof email !== "string" ||
@@ -39,9 +38,8 @@ async function controllerPostUser(req, res) {
   const id = await nanoid();
   const password_hash = await bcrypt.hash(password, await bcrypt.genSalt());
 
-  const user = await User.create();
-
   try {
+    const user = await User.create();
     await user.postUser({
       id: id,
       username: username,
@@ -63,10 +61,10 @@ async function controllerPostUser(req, res) {
 }
 
 async function controllerPutUser(req, res) {
-  const target = req.params.id;
+  const id = req.params.id;
   const { username, email, password } = req.body;
 
-  // Check if property missing
+  // Check property missing
   if (!username || !email || !password) {
     return res.status(400).json({
       status: "fail",
@@ -85,30 +83,32 @@ async function controllerPutUser(req, res) {
       .json({ status: "fail", message: "Invalid, incorrect data type" });
   }
 
-  // Check missing id target
-  if (!target) {
+  // Check missing id
+  if (!id) {
     return res
       .status(400)
-      .json({ status: "fail", message: "Invalid, missing value 'id' target" });
+      .json({ status: "fail", message: "Invalid, missing value 'id'" });
   }
 
   const updated = new Date().toISOString().slice(0, 19).replace("T", " ");
   const password_hash = await bcrypt.hash(password, await bcrypt.genSalt());
 
-  const user = await User.create();
-
   try {
-    const result = await user.putUser(target, {
-      username: username,
-      email: email,
-      password_hash: password_hash,
-      updated_at: updated,
-    });
+    const user = await User.create();
+    const result = await user.putUser(
+      {
+        username: username,
+        email: email,
+        password_hash: password_hash,
+        updated_at: updated,
+      },
+      id,
+    );
 
     // Check id match
     if (result.affectedRows === 0) {
       return res
-        .status(400)
+        .status(404)
         .json({ status: "fail", message: "Invalid, no user id match" });
     }
 
@@ -122,24 +122,23 @@ async function controllerPutUser(req, res) {
 }
 
 async function controllerDeleteUser(req, res) {
-  const target = req.params.id;
+  const id = req.params.id;
 
-  // Check missing value
-  if (!target) {
+  // Check missing property
+  if (!id) {
     return res
       .status(400)
       .json({ status: "fail", message: "Invalid, missing value 'id'" });
   }
 
-  const user = await User.create();
-
   try {
-    const result = await user.deleteUser(target);
+    const user = await User.create();
+    const result = await user.deleteUser(id);
 
     // Check id match
     if (result.affectedRows === 0) {
       return res
-        .status(400)
+        .status(404)
         .json({ status: "fail", message: "Invalid, no user id match" });
     }
 

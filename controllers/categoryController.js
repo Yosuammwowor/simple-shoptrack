@@ -15,6 +15,7 @@ async function controllerGetAllCategories(req, res) {
 async function controllerGetCategory(req, res) {
   const id = req.params.id;
 
+  // Check missing id
   if (!id) {
     return res
       .status(400)
@@ -25,6 +26,7 @@ async function controllerGetCategory(req, res) {
     const category = await Category.create();
     const result = await category.getCategory(id);
 
+    // Check id match
     if (result.length === 0) {
       return res
         .status(404)
@@ -48,11 +50,11 @@ async function controllerPostCategory(req, res) {
     });
   }
 
-  // Check data types
+  // Check incorrect data types
   if (typeof name !== "string" || typeof description !== "string") {
     return res
       .status(400)
-      .json({ status: "fail", message: "Invalid, data type" });
+      .json({ status: "fail", message: "Invalid, incorrect data type" });
   }
 
   const id = await nanoid();
@@ -66,13 +68,11 @@ async function controllerPostCategory(req, res) {
     });
 
     res
-      .status(200)
+      .status(201)
       .json({ status: "success", message: "Data successfully added!" });
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
-      return res
-        .status(409)
-        .json({ status: "fail", message: "Invalid, duplicate category id" });
+      return res.status(409).json({ status: "fail", message: error.message });
     }
 
     res.status(500).json({ status: "error", message: error.message });
@@ -98,11 +98,11 @@ async function controllerPutCategory(req, res) {
     });
   }
 
-  // Check data types
+  // Check incorrect data type
   if (typeof name !== "string" || typeof description !== "string") {
     return res
       .status(400)
-      .json({ status: "fail", message: "Invalid, data type" });
+      .json({ status: "fail", message: "Invalid, incorrect data type" });
   }
 
   const updated_at = new Date().toISOString().slice(0, 19).replace("T", " ");
@@ -114,6 +114,7 @@ async function controllerPutCategory(req, res) {
       id,
     );
 
+    // Check id match
     if (result.affectedRows === 0) {
       return res
         .status(404)
@@ -142,6 +143,7 @@ async function controllerDeleteCategory(req, res) {
     const category = await Category.create();
     const result = await category.deleteCategory(id);
 
+    // Check id match
     if (result.affectedRows === 0) {
       return res
         .status(404)

@@ -24,12 +24,10 @@ class User {
 
   async postUser(data) {
     try {
-      const [result] = await this.conn.execute(
+      return await this.conn.execute(
         "INSERT INTO users (id, username, email, password_hash) VALUES (?, ?, ?, ?)",
         [data.id, data.username, data.email, data.password_hash],
       );
-
-      return result;
     } catch (error) {
       throw error;
     } finally {
@@ -37,17 +35,11 @@ class User {
     }
   }
 
-  async putUser(target, data) {
+  async putUser(data, id) {
     try {
       const [result] = await this.conn.execute(
         "UPDATE users SET username = ?, email = ?, password_hash = ?, updated_at = ? WHERE id = ?",
-        [
-          data.username,
-          data.email,
-          data.password_hash,
-          data.updated_at,
-          target,
-        ],
+        [data.username, data.email, data.password_hash, data.updated_at, id],
       );
 
       return result;
@@ -58,11 +50,11 @@ class User {
     }
   }
 
-  async deleteUser(target) {
+  async deleteUser(id) {
     try {
       const [result] = await this.conn.execute(
         "DELETE FROM users WHERE id = ?",
-        [target],
+        [id],
       );
 
       return result;
