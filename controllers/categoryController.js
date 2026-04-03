@@ -2,9 +2,8 @@ import { Category } from "../models/Category.js";
 import { nanoid } from "nanoid";
 
 async function controllerGetAllCategories(req, res) {
-  const category = await Category.create();
-
   try {
+    const category = await Category.create();
     const result = await category.getCategories();
 
     res.status(200).json({ status: "success", data: result });
@@ -22,9 +21,8 @@ async function controllerGetCategory(req, res) {
       .json({ status: "fail", message: "Invalid, missing value 'id'" });
   }
 
-  const category = await Category.create();
-
   try {
+    const category = await Category.create();
     const result = await category.getCategory(id);
 
     if (result.length === 0) {
@@ -58,9 +56,9 @@ async function controllerPostCategory(req, res) {
   }
 
   const id = await nanoid();
-  const category = await Category.create();
 
   try {
+    const category = await Category.create();
     await category.postCategory({
       id: id,
       name: name,
@@ -108,9 +106,9 @@ async function controllerPutCategory(req, res) {
   }
 
   const updated_at = new Date().toISOString().slice(0, 19).replace("T", " ");
-  const category = await Category.create();
 
   try {
+    const category = await Category.create();
     const result = await category.putCategory(
       { name: name, description: description, updated_at: updated_at },
       id,
@@ -140,9 +138,8 @@ async function controllerDeleteCategory(req, res) {
       .json({ status: "fail", message: "Invalid, missing value 'id'" });
   }
 
-  const category = await Category.create();
-
   try {
+    const category = await Category.create();
     const result = await category.deleteCategory(id);
 
     if (result.affectedRows === 0) {
